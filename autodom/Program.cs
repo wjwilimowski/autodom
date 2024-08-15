@@ -1,14 +1,23 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
-using var api = new TmdApi();
+var configuration = new ConfigurationBuilder()
+                .AddJsonFile("secrets.json", optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables()
+                .Build();
+
+var user = int.Parse(configuration["TMD_USER"]!);
+var pass = configuration["TMD_PASS"]!;
+
+using var api = new TmdApi(user, pass);
 await api.LoginAsync();
 var pdfs = await api.GetMonthlyPdfsAsync();
 
 if (Directory.Exists("out"))
 {
-    Directory.Delete("out");
+    Directory.Delete("out", recursive: true);
 }
 Directory.CreateDirectory("out");
 foreach (var item in pdfs.Where(x => x != null))
@@ -37,7 +46,15 @@ class TmdApi : IDisposable
 {
     private readonly HttpClient httpClient = new();
     private string _token;
+    private readonly int _user;
+    private readonly string _pass;
     private readonly int _year = DateTime.Now.Year;
+
+    public TmdApi(int user, string pass)
+    {
+        _user = user;
+        _pass = pass;
+    }
 
     public void Dispose()
     {
@@ -46,7 +63,7 @@ class TmdApi : IDisposable
 
     public async Task LoginAsync()
     {
-        var response = await httpClient.PostAsync(new Uri("https://main.tomojdom.pl/login/OsLogInPass"), StringContent(new { User = Environment.GetEnvironmentVariable("TMD_USER"), Pass = Environment.GetEnvironmentVariable("TMD_PASS")}));
+        var response = await httpClient.PostAsync(new Uri("https://main.tomojdom.pl/login/OsLogInPass"), StringContent(new { User = _user, Pass = _pass}));
 
         var json = await response.Content.ReadAsStringAsync();
         var data = JsonSerializer.Deserialize<object[]>(json);
@@ -69,7 +86,7 @@ class TmdApi : IDisposable
 
     public async Task<Stream> GetPrintoutAsync(MonthlyPdf pdf)
     {
-        var response = await httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/WydrukObciazenia"), StringContent(new { NTId = pdf.Id, Rok = _year, WId = 15 })));
+        var response = await httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/WydrukObciazenia"), StringContent(new { NTId = pdf.Id, Rok = _year, WId = 15 }));
         return await response.Content.ReadAsStreamAsync();
     }
 
