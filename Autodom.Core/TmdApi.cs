@@ -6,7 +6,7 @@ namespace Autodom.Core
 {
     public class TmdApi : IDisposable
     {
-        private readonly HttpClient httpClient = new();
+        private readonly HttpClient _httpClient = new();
         private string? _token;
         private readonly int _user;
         private readonly string _pass;
@@ -20,24 +20,24 @@ namespace Autodom.Core
 
         public void Dispose()
         {
-            httpClient.Dispose();
+            _httpClient.Dispose();
         }
 
         public async Task LoginAsync()
         {
-            var response = await httpClient.PostAsync(new Uri("https://main.tomojdom.pl/login/OsLogInPass"), StringContent(new { User = _user, Pass = _pass }));
+            var response = await _httpClient.PostAsync(new Uri("https://main.tomojdom.pl/login/OsLogInPass"), StringContent(new { User = _user, Pass = _pass }));
 
             var json = await response.Content.ReadAsStringAsync();
             var data = JsonSerializer.Deserialize<object[]>(json);
 
             _token = data[2].ToString();
 
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
         }
 
         public async Task<List<BillDto>> GetBillsAsync()
         {
-            var response = await httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/RozliczeniaSzczegolowe"), StringContent(new { WId = 15, Rok = _year }));
+            var response = await _httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/RozliczeniaSzczegolowe"), StringContent(new { WId = 15, Rok = _year }));
 
             var json = await response.Content.ReadAsStringAsync();
 
@@ -46,7 +46,7 @@ namespace Autodom.Core
 
         public async Task<Stream> GetPrintoutAsync(BillDto pdf)
         {
-            var response = await httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/WydrukObciazenia"), StringContent(new { NTId = pdf.Id, Rok = _year, WId = 15 }));
+            var response = await _httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/WydrukObciazenia"), StringContent(new { NTId = pdf.Id, Rok = _year, WId = 15 }));
             return await response.Content.ReadAsStreamAsync();
         }
 
