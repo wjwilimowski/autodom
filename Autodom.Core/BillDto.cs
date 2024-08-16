@@ -2,7 +2,7 @@
 
 namespace Autodom.Core
 {
-    public record MonthlyPdf
+    public record BillDto
     {
         public required DateTime Month { get; init; }
         public required DateTime Date { get; init; }

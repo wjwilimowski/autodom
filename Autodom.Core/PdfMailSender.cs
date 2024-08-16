@@ -9,7 +9,7 @@
             _emailsToNotify = emailsToNotify;
         }
 
-        public async Task SendAsync(MonthlyPdf pdf, byte[] attachmentBytes)
+        public async Task SendAsync(BillDto pdf, byte[] attachmentBytes)
         {
             foreach (var email in _emailsToNotify)
             {

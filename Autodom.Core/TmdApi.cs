@@ -35,16 +35,16 @@ namespace Autodom.Core
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
         }
 
-        public async Task<List<MonthlyPdf>> GetMonthlyPdfsAsync()
+        public async Task<List<BillDto>> GetBillsAsync()
         {
             var response = await httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/RozliczeniaSzczegolowe"), StringContent(new { WId = 15, Rok = _year }));
 
             var json = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<object[][]>(json)!.Select(Parse).ToList();
+            return JsonSerializer.Deserialize<object[][]>(json)!.Select(Parse).Where(x => x != null).OfType<BillDto>().ToList();
         }
 
-        public async Task<Stream> GetPrintoutAsync(MonthlyPdf pdf)
+        public async Task<Stream> GetPrintoutAsync(BillDto pdf)
         {
             var response = await httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/WydrukObciazenia"), StringContent(new { NTId = pdf.Id, Rok = _year, WId = 15 }));
             return await response.Content.ReadAsStreamAsync();
@@ -55,13 +55,13 @@ namespace Autodom.Core
             return new StringContent(JsonSerializer.Serialize(o));
         }
 
-        private static MonthlyPdf Parse(object[] item)
+        private static BillDto? Parse(object[] item)
         {
             var mid = item[0].ToString()!;
             var month = DateTime.Parse(item[1].ToString()!);
             if (month.Year == 1000)
             {
-                return null!;
+                return null;
             }
             var innerItem = ((JsonElement)item[2])![0];
             var date = DateTime.Parse(innerItem![0].ToString()!);
@@ -69,7 +69,7 @@ namespace Autodom.Core
             var amount = innerItem[2].GetDecimal();
             var id = innerItem[3].GetInt32();
 
-            return new MonthlyPdf
+            return new BillDto
             {
                 Id = id,
                 MId = mid,

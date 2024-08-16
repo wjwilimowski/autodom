@@ -15,7 +15,7 @@ var emailsToNotify = configuration.GetSection("EMAILS").GetChildren().Where(kv =
 var mailSender = new PdfMailSender(emailsToNotify);
 using var api = new TmdApi(user, pass);
 await api.LoginAsync();
-var pdfs = await api.GetMonthlyPdfsAsync();
+var pdfs = await api.GetBillsAsync();
 
 foreach (var item in pdfs.Where(x => x != null))
 {
