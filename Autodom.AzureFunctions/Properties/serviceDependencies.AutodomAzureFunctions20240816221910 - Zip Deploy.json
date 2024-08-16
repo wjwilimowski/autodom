@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "appInsights1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/AutodomAzureFunctions",
+      "type": "appInsights.azure",
+      "connectionId": "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    },
+    "storage1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/csb10032000efd6d2e8",
+      "type": "storage.azure",
+      "connectionId": "AzureWebJobsStorage"
+    }
+  }
+}

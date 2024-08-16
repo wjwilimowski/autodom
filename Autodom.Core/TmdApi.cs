@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace Autodom.Core
 {
@@ -11,11 +12,13 @@ namespace Autodom.Core
         private readonly int _user;
         private readonly string _pass;
         private readonly int _year = DateTime.Now.Year;
+        private readonly ILogger _logger;
 
-        public TmdApi(int user, string pass)
+        public TmdApi(int user, string pass, ILogger logger)
         {
             _user = user;
             _pass = pass;
+            _logger = logger;
         }
 
         public void Dispose()
@@ -28,6 +31,7 @@ namespace Autodom.Core
             var response = await _httpClient.PostAsync(new Uri("https://main.tomojdom.pl/login/OsLogInPass"), StringContent(new { User = _user, Pass = _pass }));
 
             var json = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Received login response: {loginResponseJson}", json);
             var data = JsonSerializer.Deserialize<object[]>(json);
 
             _token = data[2].ToString();
@@ -40,6 +44,7 @@ namespace Autodom.Core
             var response = await _httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/RozliczeniaSzczegolowe"), StringContent(new { WId = 15, Rok = _year }));
 
             var json = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Received bills response: {billsResponseJson}", json);
 
             return JsonSerializer.Deserialize<object[][]>(json)!.Select(Parse).Where(x => x != null).OfType<BillDto>().ToList();
         }

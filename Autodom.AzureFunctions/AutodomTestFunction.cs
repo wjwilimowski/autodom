@@ -19,20 +19,32 @@ namespace Autodom.AzureFunctions
         [Function("AutodomTestFunction")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req, ExecutionContext context)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("local.settings.json", optional: true, reloadOnChange: false).AddEnvironmentVariables().Build();
-            var user = config.GetValue<int>("Values:TMD_USER");
-            var pass = config.GetValue<string>("Values:TMD_PASS")!;
-            var tmdApi = new TmdApi(user, pass);
-
-            await tmdApi.LoginAsync();
-
-            var bills = await tmdApi.GetBillsAsync();
-            foreach (var bill in bills)
+            try
             {
-                _logger.LogInformation("{Bill}", bill.ToString());
-            }
+                var config = new ConfigurationBuilder()
+                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: false).AddEnvironmentVariables()
+                    .Build();
 
-            return new OkObjectResult(new { Bills = bills });
+                var user = config.GetValue<int>("TMD_USER");
+                var pass = config.GetValue<string>("TMD_PASS")!;
+                _logger.LogInformation("User: {User} Pass: {Pass}", user, pass);
+                var tmdApi = new TmdApi(user, pass, _logger);
+
+                await tmdApi.LoginAsync();
+
+                var bills = await tmdApi.GetBillsAsync();
+
+                return new OkObjectResult(new { Bills = bills });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception in function: {message}", ex.Message);
+
+                return new ObjectResult(new { Type = ex.GetType().FullName, ex.Message, ex.StackTrace})
+                {
+                    StatusCode = 500
+                };
+            }
         }
     }
 }
