@@ -1,7 +1,6 @@
-﻿
-namespace autodom
+﻿namespace Autodom.Core
 {
-    internal class PdfMailSender
+    public class PdfMailSender
     {
         private readonly List<string> _emailsToNotify;
 

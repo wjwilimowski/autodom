@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "autodom", "autodom\autodom.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autodom.AzureFunctions", "Autodom.AzureFunctions\Autodom.AzureFunctions.csproj", "{05F60279-10C9-44E0-A19C-B006DC08268B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autodom.Core", "Autodom.Core\Autodom.Core.csproj", "{E6C9F15A-57AC-4BDD-BBCF-F5325FDC001B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{05F60279-10C9-44E0-A19C-B006DC08268B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05F60279-10C9-44E0-A19C-B006DC08268B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05F60279-10C9-44E0-A19C-B006DC08268B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6C9F15A-57AC-4BDD-BBCF-F5325FDC001B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6C9F15A-57AC-4BDD-BBCF-F5325FDC001B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6C9F15A-57AC-4BDD-BBCF-F5325FDC001B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6C9F15A-57AC-4BDD-BBCF-F5325FDC001B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

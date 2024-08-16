@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using autodom;
+using Autodom.Core;
 using Microsoft.Extensions.Configuration;
 
 var configuration = new ConfigurationBuilder()
