@@ -2,6 +2,7 @@
 
 using Autodom.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 var configuration = new ConfigurationBuilder()
                 .AddJsonFile("secrets.json", optional: true, reloadOnChange: false)
@@ -13,7 +14,7 @@ var pass = configuration["TMD_PASS"]!;
 var emailsToNotify = configuration.GetSection("EMAILS").GetChildren().Where(kv => bool.Parse(kv.Value!)).Select(kv => kv.Key).ToList();
 
 var mailSender = new PdfMailSender(emailsToNotify);
-using var api = new TmdApi(user, pass);
+using var api = new TmdApi(user, pass, new NullLoggerFactory().CreateLogger("nullLogger"));
 await api.LoginAsync();
 var pdfs = await api.GetBillsAsync();
 

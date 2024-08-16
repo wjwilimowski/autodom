@@ -27,6 +27,7 @@ namespace Autodom.AzureFunctions
 
                 var user = config.GetValue<int>("TMD_USER");
                 var pass = config.GetValue<string>("TMD_PASS")!;
+                var sendgridApiKey = config.GetValue<string>("SENDGRID_API_KEY")!;
                 _logger.LogInformation("User: {User} Pass: {Pass}", user, pass);
                 var tmdApi = new TmdApi(user, pass, _logger);
 
@@ -34,6 +35,8 @@ namespace Autodom.AzureFunctions
 
                 var bills = await tmdApi.GetBillsAsync();
 
+                var sender = new PdfMailSender([], sendgridApiKey, _logger);
+                await sender.SendAsync("wjwilimowski@gmail.com", bills.First());
                 return new OkObjectResult(new { Bills = bills });
             }
             catch (Exception ex)
