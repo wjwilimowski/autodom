@@ -44,9 +44,9 @@ namespace Autodom.Core
             return JsonSerializer.Deserialize<object[][]>(json)!.Select(Parse).Where(x => x != null).OfType<BillDto>().ToList();
         }
 
-        public async Task<Stream> GetPrintoutAsync(BillDto pdf)
+        public async Task<Stream> GetPdfAsStreamAsync(BillDto bill)
         {
-            var response = await _httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/WydrukObciazenia"), StringContent(new { NTId = pdf.Id, Rok = _year, WId = 15 }));
+            var response = await _httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/WydrukObciazenia"), StringContent(new { NTId = bill.Id, Rok = _year, WId = 15 }));
             return await response.Content.ReadAsStreamAsync();
         }
 

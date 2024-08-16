@@ -20,7 +20,7 @@ var pdfs = await api.GetBillsAsync();
 foreach (var item in pdfs.Where(x => x != null))
 {
     Console.WriteLine(item);
-    using var printout = await api.GetPrintoutAsync(item);
+    using var printout = await api.GetPdfAsStreamAsync(item);
     using var ms = new MemoryStream();
     await printout.CopyToAsync(ms);
     await mailSender.SendAsync(item, ms.ToArray());
