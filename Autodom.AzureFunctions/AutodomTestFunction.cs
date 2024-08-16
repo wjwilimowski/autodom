@@ -1,3 +1,4 @@
+using Autodom.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -15,10 +16,21 @@ namespace Autodom.AzureFunctions
         }
 
         [Function("AutodomTestFunction")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-            return new OkObjectResult("Welcome to Azure Functions!");
+            var user = int.Parse(Environment.GetEnvironmentVariable("TMD_USER")!);
+            var pass = Environment.GetEnvironmentVariable("TMD_PASS")!;
+            var tmdApi = new TmdApi(user, pass);
+
+            await tmdApi.LoginAsync();
+
+            var bills = await tmdApi.GetMonthlyPdfsAsync();
+            foreach (var bill in bills)
+            {
+                _logger.LogInformation("{Bill}", bill.ToString());
+            }
+
+            return new OkObjectResult(new { Bills = bills });
         }
     }
 }
