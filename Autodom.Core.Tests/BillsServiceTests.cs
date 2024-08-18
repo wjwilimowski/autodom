@@ -13,5 +13,23 @@ namespace Autodom.Core.Tests
 
             bills.Should().BeEmpty();
         }
+
+        [Fact]
+        public void AllBillsHaveBeenProcessed_ReturnsNone()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void SomeNewBillsWithOldDate_ReturnsNewBills_UpdatesRecordWithNewBills()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void BillsWithANewDate_AllReturned_AllRecorded()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
