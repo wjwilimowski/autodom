@@ -9,8 +9,8 @@ public class LastProcessedBillsRecord
 
 public class BillsService
 {
-    public IEnumerable<BillDto> FindUnprocessedBills(IEnumerable<BillDto> bills, LastProcessedBillsRecord record)
+    public (List<BillDto> billsToProcess, LastProcessedBillsRecord recordToSave) FindUnprocessedBills(IEnumerable<BillDto> bills, LastProcessedBillsRecord record)
     {
-        yield break;
+        return ([], record);
     } 
 }

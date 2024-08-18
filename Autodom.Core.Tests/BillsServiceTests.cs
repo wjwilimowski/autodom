@@ -9,9 +9,9 @@ namespace Autodom.Core.Tests
         [Fact]
         public void ReturnsEmptyWhenNoInput()
         {
-            var result = _sut.FindUnprocessedBills(new List<BillDto>(), new());
+            var (bills, record) = _sut.FindUnprocessedBills(new List<BillDto>(), new());
 
-            result.Should().BeEmpty();
+            bills.Should().BeEmpty();
         }
     }
 }
