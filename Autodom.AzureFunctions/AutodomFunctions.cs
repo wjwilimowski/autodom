@@ -7,11 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Autodom.AzureFunctions
 {
-    public class AutodomTestFunction
+    public class AutodomFunctions
     {
-        private readonly ILogger<AutodomTestFunction> _logger;
+        private readonly ILogger<AutodomFunctions> _logger;
 
-        public AutodomTestFunction(ILogger<AutodomTestFunction> logger)
+        public AutodomFunctions(ILogger<AutodomFunctions> logger)
         {
             _logger = logger;
         }
@@ -46,6 +46,30 @@ namespace Autodom.AzureFunctions
                     StatusCode = 500
                 };
             }
+        }
+
+        public async Task CheckAccountBalanceForChangesAndNotifyOwner()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Function("AutodomTestFunction")]
+        public async Task<IActionResult> TestHttpTrigger(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req, ExecutionContext context)
+        {
+            await TriggerChecksAsync();
+
+            return new OkResult();
+        }
+
+        public async Task CronTrigger()
+        {
+            await TriggerChecksAsync();
+        }
+
+        private async Task TriggerChecksAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }
