@@ -1,6 +1,6 @@
-﻿namespace Autodom.Core;
+﻿namespace Autodom.Core.Dtos;
 
-public record AccountDto
+public record AccountCheckTriggerDto
 {
     public required int User { get; init; }
     public required string Pass { get; init; }
