@@ -1,4 +1,5 @@
 using Autodom.Core;
+using Autodom.Core.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -48,12 +49,14 @@ namespace Autodom.AzureFunctions
             }
         }
 
-        public async Task CheckAccountBalanceForChangesAndNotifyOwner()
+        [Function(nameof(CheckAccountBalanceForChangesAndNotifyOwner))]
+        public async Task CheckAccountBalanceForChangesAndNotifyOwner([QueueTrigger("autodom-check-triggers-queue", Connection = "CheckTriggersQueueConnection")] AccountCheckTriggerDto trigger)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Received trigger: {Trigger}", trigger);
+            await Task.CompletedTask;
         }
 
-        [Function("AutodomTestFunction")]
+        [Function("TestHttpTrigger")]
         public async Task<IActionResult> TestHttpTrigger(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req, ExecutionContext context)
         {
