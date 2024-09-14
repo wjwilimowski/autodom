@@ -13,7 +13,7 @@ var user = int.Parse(configuration["TMD_USER"]!);
 var pass = configuration["TMD_PASS"]!;
 var emailsToNotify = configuration.GetSection("EMAILS").GetChildren().Where(kv => bool.Parse(kv.Value!)).Select(kv => kv.Key).ToList();
 
-var mailSender = new PdfMailSender(emailsToNotify, string.Empty, NullLogger.Instance);
+var mailSender = new MailSender(emailsToNotify, string.Empty, NullLogger.Instance);
 using var api = new TmdApi(user, pass, new NullLoggerFactory().CreateLogger("nullLogger"));
 await api.LoginAsync();
 var pdfs = await api.GetBillsAsync();

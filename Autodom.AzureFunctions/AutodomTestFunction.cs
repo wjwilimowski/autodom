@@ -33,11 +33,9 @@ namespace Autodom.AzureFunctions
 
                 await tmdApi.LoginAsync();
 
-                var bills = await tmdApi.GetBillsAsync();
-
-                var sender = new PdfMailSender([], sendgridApiKey, _logger);
-                await sender.SendAsync("wjwilimowski@gmail.com", bills.First());
-                return new OkObjectResult(new { Bills = bills });
+                var sender = new MailSender([], sendgridApiKey, _logger);
+                await sender.SendAsync("wjwilimowski@gmail.com", "test");
+                return new OkResult();
             }
             catch (Exception ex)
             {

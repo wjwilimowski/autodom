@@ -1,8 +1,8 @@
 ﻿namespace Autodom.Core;
 
-public record AccountConfig
+public record AccountDto
 {
     public required int User { get; init; }
     public required string Pass { get; init; }
-    public required List<string> EmailsToNotify { get; init; } = [];
+    public required string Email { get; init; }
 }
