@@ -33,14 +33,12 @@ public class AutodomFunctions
 
             var user = config.GetValue<int>("TMD_USER");
             var pass = config.GetValue<string>("TMD_PASS")!;
-            var sendgridApiKey = config.GetValue<string>("SENDGRID_API_KEY")!;
             _logger.LogInformation("User: {User} Pass: {Pass}", user, pass);
             var tmdApi = new TmdApi(user, pass, _logger);
 
             await tmdApi.LoginAsync();
 
-            var sender = new MailSender([], sendgridApiKey, _logger);
-            await sender.SendAsync("wjwilimowski@gmail.com", "test");
+
             return new OkResult();
         }
         catch (Exception ex)
