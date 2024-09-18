@@ -75,7 +75,7 @@ public class AutodomFunctions
     [Function(nameof(CronTrigger))]
     [QueueOutput("autodom-check-triggers-queue", Connection = "CheckTriggersQueueConnection")]
     public async Task<AccountCheckTriggerDto[]> CronTrigger(
-        [TimerTrigger("0 0/5 * * * *")] TimerInfo timerInfo, FunctionContext context)
+        [TimerTrigger("0 0 6 * * *")] TimerInfo timerInfo, FunctionContext context)
     {
         context.GetLogger(nameof(CronTrigger)).LogInformation("Cron trigger");
         return await GetAccountsAsync();
