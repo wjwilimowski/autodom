@@ -1,15 +1,18 @@
 {
     "version": "2.0",
-    "logging": {
-      "applicationInsights": {
-        "logLevel": {
-          "Default":  "Debug"
-        },
-        "samplingSettings": {
-          "isEnabled": false,
-          "excludedTypes": "Request"
-        },
-        "enableLiveMetricsFilters": true
-      }
+  "logging": {
+    "applicationInsights": {
+      "logLevel": {
+        "Default": "Debug"
+      },
+      "samplingSettings": {
+        "isEnabled": false,
+        "excludedTypes": "Request"
+      },
+      "enableLiveMetricsFilters": true
     }
+  },
+  "queues": {
+    "maxDequeueCount": 2
+  }
 }

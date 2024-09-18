@@ -44,9 +44,11 @@ namespace Autodom.Core
 
         public async Task<AccountBalanceDto> GetAccountBalanceAsync()
         {
-            var response = await _httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/Rozliczenia"), StringContent(15));
-
+            var response = await _httpClient.PostAsync(new Uri("https://taurus.tomojdom.pl/app/api/Rozliczenia"), new StringContent("15"));
+            
             var json = await response.Content.ReadAsStringAsync();
+
+            _logger.LogInformation("Got balance response {StatusCode}: {BalanceResponseJson}", response.StatusCode, json);
 
             var balance = TmdResponseParser.ParseAccountBalanceDto(json);
 
@@ -68,8 +70,7 @@ public class TmdResponseParser
 
         return new AccountBalanceDto
         {
-            Balance = balance,
-            LastChangedDateTime = DateTime.UtcNow
+            Balance = balance
         };
     }
 }
