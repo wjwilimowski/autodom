@@ -55,7 +55,7 @@ public class AutodomFunctions
 
         if (latest.Balance != current.Balance)
         {
-            await mailSender.SendAsync(trigger.Email, $"Tomojdom.pl - zmiana salda ({trigger.User})",
+            await mailSender.SendAsync(trigger.Email, $"Tomojdom.pl - zmiana salda ({trigger.ApartmentName})",
                 $"Było: {latest.Balance}, jest: {current.Balance}");
 
             await connection.ExecuteAsync(
