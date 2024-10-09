@@ -38,18 +38,12 @@ public class AutodomFunctions
 
         var mailSender = new MailSender(sendgridApiKey, _logger);
 
-        await using var connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString"));
-
         var tmdApi = new TmdApi(trigger.User, trigger.Pass, _logger);
         await tmdApi.LoginAsync();
 
-
         var current = await tmdApi.GetAccountBalanceAsync() with { AccountId = trigger.Id, LastChangedDateTime = DateTime.Now };
 
-        var latest = await connection.QueryFirstOrDefaultAsync<AccountBalanceDto>(
-                         "SELECT * FROM dbo.AccountBalances WHERE AccountId = @AccountId ORDER BY [LastChangedDateTime] DESC",
-                         new { AccountId = trigger.Id })
-                     ?? new AccountBalanceDto() { Balance = 0m, LastChangedDateTime = DateTime.MinValue };
+        var latest = await GetLatestAccountBalanceAsync(trigger.Id);
 
         _logger.LogInformation("Found latest account balance: {Balance}", latest);
 
@@ -58,10 +52,12 @@ public class AutodomFunctions
             await mailSender.SendAsync(trigger.Email, $"Tomojdom.pl - zmiana salda ({trigger.ApartmentName})",
                 $"Było: {latest.Balance}, jest: {current.Balance}");
 
-            await connection.ExecuteAsync(
-                $"INSERT INTO dbo.AccountBalances ([AccountId], [Balance], [LastChangedDateTime]) VALUES ({current.AccountId}, {current.Balance}, '{current.LastChangedDateTime:yyyy-MM-dd}')");
+            await SaveCurrentAccountBalanceAsync(current);
         }
     }
+
+    // SELECT * FROM c WHERE c.accountId = 1 ORDER BY c.lastChangedDateTime DESC
+    // SELECT * from c
 
     [Function(nameof(TestQueueTrigger))]
     [QueueOutput("autodom-check-triggers-queue", Connection = "CheckTriggersQueueConnection")]
@@ -87,5 +83,23 @@ public class AutodomFunctions
         var accounts = await connection.QueryAsync<AccountCheckTriggerDto>("select * from dbo.Accounts");
 
         return accounts.ToArray();
+    }
+
+    private static async Task<AccountBalanceDto> GetLatestAccountBalanceAsync(int accountId) 
+    {
+        await using var connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString"));
+
+        var latest = await connection.QueryFirstOrDefaultAsync<AccountBalanceDto>(
+                         "SELECT * FROM dbo.AccountBalances WHERE AccountId = @AccountId ORDER BY [LastChangedDateTime] DESC",
+                         new { AccountId = accountId })
+                     ?? new AccountBalanceDto() { Balance = 0m, LastChangedDateTime = DateTime.MinValue };
+    }
+
+    private static async Task SaveCurrentAccountBalanceAsync(AccountBalanceDto current)
+    {
+        await using var connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString"));
+
+        await connection.ExecuteAsync(
+                $"INSERT INTO dbo.AccountBalances ([AccountId], [Balance], [LastChangedDateTime]) VALUES ({current.AccountId}, {current.Balance}, '{current.LastChangedDateTime:yyyy-MM-dd}')");
     }
 }
