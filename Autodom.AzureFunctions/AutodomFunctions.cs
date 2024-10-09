@@ -29,14 +29,7 @@ public class AutodomFunctions
     {
         _logger.LogInformation("Received trigger: {Trigger}", trigger);
 
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("local.settings.json", optional: true, reloadOnChange: false)
-            .AddEnvironmentVariables()
-            .Build();
-
-        var sendgridApiKey = config.GetValue<string>("SENDGRID_API_KEY")!;
-
-        var mailSender = new MailSender(sendgridApiKey, _logger);
+        var mailSender = new MailSender(_logger);
 
         var tmdApi = new TmdApi(trigger.User, trigger.Pass, _logger);
         await tmdApi.LoginAsync();
