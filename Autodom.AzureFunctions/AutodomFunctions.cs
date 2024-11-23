@@ -19,10 +19,10 @@ public class AutodomFunctions
     private readonly ILogger<AutodomFunctions> _logger;
     private readonly CosmosDbService _cosmosDbService;
 
-    public AutodomFunctions(ILogger<AutodomFunctions> logger, CosmosDbService cosmosDbService)
+    public AutodomFunctions(ILogger<AutodomFunctions> logger)
     {
         _logger = logger;
-        _cosmosDbService = cosmosDbService;
+        _cosmosDbService = new CosmosDbService(Environment.GetEnvironmentVariable("CosmosDbConnectionString"));
     }
 
 
