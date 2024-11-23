@@ -5,6 +5,7 @@ using Azure.Identity;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Extensions.Sql;
 using Microsoft.Data.SqlClient;
@@ -70,31 +71,38 @@ public class AutodomFunctions
         return await GetAccountsAsync();
     }
 
+    private class AccountInfo
+    {
+        public int Id { get; set; }
+        public List<AccountCheckTriggerDto> Accounts { get; set; }
+    }
+
     private static async Task<AccountCheckTriggerDto[]> GetAccountsAsync()
     {
-        await using var connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString"));
-        var accounts = await connection.QueryAsync<AccountCheckTriggerDto>("select * from dbo.Accounts");
+        var cl = new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbConnectionString"));
+        var accountInfo = await cl.GetDatabase("autodom-cosmosdb")
+            .GetContainer("account-info")
+            .ReadItemAsync<AccountInfo>("1", new PartitionKey());
 
-        return accounts.ToArray();
+        return accountInfo.Resource.Accounts.ToArray();
     }
 
     private static async Task<AccountBalanceDto> GetLatestAccountBalanceAsync(int accountId) 
     {
-        await using var connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString"));
+        var cl = new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbConnectionString"));
+        var accountBalanceDto = await cl.GetDatabase("autodom-cosmosdb")
+            .GetContainer("account-balances")
+            .GetItemQueryIterator<AccountBalanceDto>($"select * from account-balances a where a.accountId = {accountId} order by a.lastChangedDateTime desc")
+            .ReadNextAsync();
 
-        var latest = await connection.QueryFirstOrDefaultAsync<AccountBalanceDto>(
-                         "SELECT * FROM dbo.AccountBalances WHERE AccountId = @AccountId ORDER BY [LastChangedDateTime] DESC",
-                         new { AccountId = accountId })
-                     ?? new AccountBalanceDto() { Balance = 0m, LastChangedDateTime = DateTime.MinValue };
-
-        return latest
+        return accountBalanceDto.Resource.First();
     }
 
     private static async Task SaveCurrentAccountBalanceAsync(AccountBalanceDto current)
     {
-        await using var connection = new SqlConnection(Environment.GetEnvironmentVariable("SqlConnectionString"));
-
-        await connection.ExecuteAsync(
-                $"INSERT INTO dbo.AccountBalances ([AccountId], [Balance], [LastChangedDateTime]) VALUES ({current.AccountId}, {current.Balance}, '{current.LastChangedDateTime:yyyy-MM-dd}')");
+        var cl = new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbConnectionString"));
+        await cl.GetDatabase("autodom-cosmosdb")
+            .GetContainer("account-balances")
+            .CreateItemAsync(current with { Id = Guid.NewGuid().ToString() });
     }
 }
