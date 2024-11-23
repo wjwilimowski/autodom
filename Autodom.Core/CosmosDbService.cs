@@ -54,7 +54,7 @@ namespace Autodom.Core
             var cl = new CosmosClient(_dbConnectionString);
             await cl.GetDatabase("autodom-cosmosdb")
             .GetContainer("account-balances")
-                .CreateItemAsync(current with { Id = id }, new PartitionKey(id));
+                .CreateItemAsync(current with { Id = id });
         }
     }
 }
