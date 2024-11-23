@@ -86,6 +86,8 @@ public class AutodomFunctions
                          "SELECT * FROM dbo.AccountBalances WHERE AccountId = @AccountId ORDER BY [LastChangedDateTime] DESC",
                          new { AccountId = accountId })
                      ?? new AccountBalanceDto() { Balance = 0m, LastChangedDateTime = DateTime.MinValue };
+
+        return latest
     }
 
     private static async Task SaveCurrentAccountBalanceAsync(AccountBalanceDto current)
