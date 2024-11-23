@@ -1,3 +1,4 @@
+using Autodom.Core;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,7 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
+        services.AddSingleton<CosmosDbService>(svc => new CosmosDbService(Environment.GetEnvironmentVariable("CosmosDbConnectionString")));
 
     })
     .ConfigureLogging(logging => {
