@@ -45,8 +45,7 @@ namespace Autodom.Core.Tests
             {
                 Balance = 100,
                 AccountId = _id,
-                LastChangedDateTime = DateTime.UtcNow,
-                Id = Guid.NewGuid().ToString()
+                LastChangedDateTime = DateTime.UtcNow
             };
             var secondAccountBalance = new AccountBalanceDto
             {
@@ -68,7 +67,7 @@ namespace Autodom.Core.Tests
 
             _mailSender.Verify(s => s.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 
-            _tmdApi.Setup(s => s.GetAccountBalanceAsync()).ReturnsAsync(firstAccountBalance   );
+            _tmdApi.Setup(s => s.GetAccountBalanceAsync()).ReturnsAsync(secondAccountBalance);
             await _sut.GoAsync(trigger);
 
             _mailSender.Verify(s => s.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);

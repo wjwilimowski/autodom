@@ -39,7 +39,7 @@ namespace Autodom.Core
         public async Task<AccountBalanceDto> GetLatestAccountBalanceAsync(string accountId)
         {
             var cl = new CosmosClient(_dbConnectionString);
-            var query = new QueryDefinition($"select * from a where a.accountId = \"{accountId}\" order by a.lastChangedDateTime desc");
+            var query = new QueryDefinition($"select * from a where a.AccountId = \"{accountId}\" order by a.LastChangedDateTime desc");
             var accountBalanceDto = await cl.GetDatabase("autodom-cosmosdb")
                 .GetContainer("account-balances")
                 .GetItemQueryIterator<AccountBalanceDto>(query)
