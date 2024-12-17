@@ -26,7 +26,7 @@ namespace Autodom.Core
 
             var latest = await _cosmosDbService.GetLatestAccountBalanceAsync(trigger.Id);
 
-            _logger.LogInformation("Found latest account balance: {Balance}", latest);
+            _logger.LogInformation("Previous: {Previous}, Current: {Current}", latest, current);
 
             if (latest.Balance != current.Balance)
             {
