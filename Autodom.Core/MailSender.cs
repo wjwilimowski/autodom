@@ -12,9 +12,9 @@ namespace Autodom.Core
     public class MailSender : IMailSender
     {
         private readonly string _sendgridApiKey;
-        private readonly ILogger _logger;
+        private readonly ILogger<MailSender> _logger;
 
-        public MailSender(ILogger logger)
+        public MailSender(ILogger<MailSender> logger)
         {
             _sendgridApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             _logger = logger;

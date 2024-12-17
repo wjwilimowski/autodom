@@ -21,7 +21,7 @@ namespace Autodom.Core
         private readonly HttpClient _httpClient = new();
         private string? _token;
         private readonly int _year = DateTime.Now.Year;
-        private readonly ILogger _logger;
+        private readonly ILogger<TmdApi> _logger;
 
         public TmdApi(ILogger<TmdApi> logger)
         {
