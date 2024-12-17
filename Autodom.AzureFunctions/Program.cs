@@ -13,7 +13,7 @@ var host = new HostBuilder()
         services.AddTransient(_ => new CosmosDbService(Environment.GetEnvironmentVariable("CosmosDbConnectionString")));
         services.AddTransient<AutodomService>();
         services.AddTransient<IMailSender, MailSender>();
-        services.AddTransient<TmdApi>();
+        services.AddTransient<ITmdApi, TmdApi>();
     })
     .ConfigureLogging(logging => {
         logging.Services.Configure<LoggerFilterOptions>(options => {

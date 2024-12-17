@@ -19,14 +19,12 @@ public class AutodomFunctions
     private readonly ILogger<AutodomFunctions> _logger;
     private readonly CosmosDbService _cosmosDbService;
     private readonly AutodomService _autodomService;
-    private readonly TmdApi _tmdApi;
 
-    public AutodomFunctions(ILogger<AutodomFunctions> logger, CosmosDbService cosmosDbService, AutodomService autodomService, TmdApi tmdApi)
+    public AutodomFunctions(ILogger<AutodomFunctions> logger, CosmosDbService cosmosDbService, AutodomService autodomService)
     {
         _logger = logger;
         _cosmosDbService = cosmosDbService;
         _autodomService = autodomService;
-        _tmdApi = tmdApi;
     }
 
 
