@@ -8,14 +8,22 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Autodom.Core
 {
-    public class TmdApi : IDisposable
+
+    public interface ITmdApi
+    {
+        Task LoginAsync(int user, string pass);
+
+        Task<AccountBalanceDto> GetAccountBalanceAsync();
+    }
+
+    public class TmdApi : IDisposable, ITmdApi
     {
         private readonly HttpClient _httpClient = new();
         private string? _token;
         private readonly int _year = DateTime.Now.Year;
         private readonly ILogger _logger;
 
-        public TmdApi(ILogger logger)
+        public TmdApi(ILogger<TmdApi> logger)
         {
             _logger = logger;
         }
