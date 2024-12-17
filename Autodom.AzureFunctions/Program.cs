@@ -3,7 +3,6 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.ApplicationInsights;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -11,7 +10,10 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
-
+        services.AddTransient(_ => new CosmosDbService(Environment.GetEnvironmentVariable("CosmosDbConnectionString")));
+        services.AddTransient<AutodomService>();
+        services.AddTransient<IMailSender, MailSender>();
+        services.AddTransient<TmdApi>();
     })
     .ConfigureLogging(logging => {
         logging.Services.Configure<LoggerFilterOptions>(options => {

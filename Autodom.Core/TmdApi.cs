@@ -12,15 +12,11 @@ namespace Autodom.Core
     {
         private readonly HttpClient _httpClient = new();
         private string? _token;
-        private readonly int _user;
-        private readonly string _pass;
         private readonly int _year = DateTime.Now.Year;
         private readonly ILogger _logger;
 
-        public TmdApi(int user, string pass, ILogger logger)
+        public TmdApi(ILogger logger)
         {
-            _user = user;
-            _pass = pass;
             _logger = logger;
         }
 
@@ -29,9 +25,9 @@ namespace Autodom.Core
             _httpClient.Dispose();
         }
 
-        public async Task LoginAsync()
+        public async Task LoginAsync(int user, string pass)
         {
-            var response = await _httpClient.PostAsync(new Uri("https://main.tomojdom.pl/login/OsLogInPass"), StringContent(new { User = _user, Pass = _pass }));
+            var response = await _httpClient.PostAsync(new Uri("https://main.tomojdom.pl/login/OsLogInPass"), StringContent(new { User = user, Pass = pass }));
 
             var json = await response.Content.ReadAsStringAsync();
             _logger.LogInformation("Received login response: {loginResponseJson}", json);

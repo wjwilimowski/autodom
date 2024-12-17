@@ -4,7 +4,12 @@ using SendGrid.Helpers.Mail;
 
 namespace Autodom.Core
 {
-    public class MailSender
+    public interface IMailSender
+    {
+        Task SendAsync(string emailAddress, string subject, string message);
+    }
+
+    public class MailSender : IMailSender
     {
         private readonly string _sendgridApiKey;
         private readonly ILogger _logger;

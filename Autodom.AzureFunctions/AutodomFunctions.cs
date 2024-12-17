@@ -18,11 +18,15 @@ public class AutodomFunctions
 {
     private readonly ILogger<AutodomFunctions> _logger;
     private readonly CosmosDbService _cosmosDbService;
+    private readonly AutodomService _autodomService;
+    private readonly TmdApi _tmdApi;
 
-    public AutodomFunctions(ILogger<AutodomFunctions> logger)
+    public AutodomFunctions(ILogger<AutodomFunctions> logger, CosmosDbService cosmosDbService, AutodomService autodomService, TmdApi tmdApi)
     {
         _logger = logger;
-        _cosmosDbService = new CosmosDbService(Environment.GetEnvironmentVariable("CosmosDbConnectionString"));
+        _cosmosDbService = cosmosDbService;
+        _autodomService = autodomService;
+        _tmdApi = tmdApi;
     }
 
 
@@ -32,24 +36,7 @@ public class AutodomFunctions
     {
         _logger.LogInformation("Received trigger: {Trigger}", trigger);
 
-        var mailSender = new MailSender(_logger);
-
-        var tmdApi = new TmdApi(trigger.User, trigger.Pass, _logger);
-        await tmdApi.LoginAsync();
-
-        var current = await tmdApi.GetAccountBalanceAsync() with { AccountId = trigger.Id, LastChangedDateTime = DateTime.Now };
-
-        var latest = await GetLatestAccountBalanceAsync(trigger.Id);
-
-        _logger.LogInformation("Found latest account balance: {Balance}", latest);
-
-        if (latest.Balance != current.Balance)
-        {
-            await mailSender.SendAsync(trigger.Email, $"Tomojdom.pl - zmiana salda ({trigger.ApartmentName})",
-                $"Było: {latest.Balance}, jest: {current.Balance}");
-
-            await SaveCurrentAccountBalanceAsync(current);
-        }
+        await _autodomService.GoAsync(trigger);
     }
 
     // SELECT * FROM c WHERE c.accountId = 1 ORDER BY c.lastChangedDateTime DESC
@@ -77,15 +64,5 @@ public class AutodomFunctions
     private async Task<AccountCheckTriggerDto[]> GetApartmentsAsync()
     {
         return await _cosmosDbService.GetApartmentsAsync();
-    }
-
-    private async Task<AccountBalanceDto> GetLatestAccountBalanceAsync(string accountId) 
-    {
-        return await _cosmosDbService.GetLatestAccountBalanceAsync(accountId);
-    }
-
-    private async Task SaveCurrentAccountBalanceAsync(AccountBalanceDto current)
-    {
-        await _cosmosDbService.SaveCurrentAccountBalanceAsync(current);
     }
 }
